@@ -1,6 +1,6 @@
 const { GoogleGenAI, Type } = require("@google/genai");
 const { z } = require("zod");
-const puppeteer=require("puppeteer")
+
 const { zodToJsonSchema } = require("zod-to-json-schema")
 
 const ai = new GoogleGenAI({
@@ -171,6 +171,7 @@ Return ONLY valid JSON.
 }
 
 async function generatePdfFromHtml(htmlContent) {
+    const puppeteer=(await import("puppeteer")).default;
     const browser = await puppeteer.launch()
     const page = await browser.newPage();
     await page.setContent(htmlContent, { waitUntil: "networkidle0" })
