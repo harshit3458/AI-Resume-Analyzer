@@ -3,36 +3,32 @@ const { generateInterviewReport,generateResumePdf } = require("../services/ai.se
 const interviewReportModel = require("../models/interviewReport.model")
 
 
+const pdfParse = require("pdf-parse");
+
 async function generateInterViewReportController(req, res) {
 
-    const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
-    const { selfDescription, jobDescription } = req.body
+    const resumeContent = await pdfParse(req.file.buffer);
+
+    const { selfDescription, jobDescription } = req.body;
 
     const interViewReportByAi = await generateInterviewReport({
         resume: resumeContent.text,
         selfDescription,
         jobDescription
-    })
+    });
 
-    // console.log(JSON.stringify(interViewReportByAi,null,2));
-
-   
-       const interviewReport = await interviewReportModel.create({
+    const interviewReport = await interviewReportModel.create({
         user: req.user.id,
         resume: resumeContent.text,
         selfDescription,
         jobDescription,
         ...interViewReportByAi
-    })
-    
-
-   
+    });
 
     res.status(201).json({
         message: "Interview report generated successfully.",
         interviewReport
-    })
-
+    });
 }
 
 async function getInterviewReportByIdController(req, res) {
